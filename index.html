@@ -1,48 +1,128 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Karan Patel</title>
-  <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <meta name="description" content="I am a Computer Science student." />
-  <meta property="og:site_name" content="Karan Patel - Portfolio" />
-  <meta property="og:title" content="Karan Patel" />
-  <meta
-    property="og:description"
-    content="I design and code things on the web." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="img/OgMetaImage.png" />
-  <link rel="icon" type="image/png" href="img/favicon.png" />
-  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
-  <link rel="stylesheet" type="text/css" media="screen" href="css/styles.css" />
-</head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Karan Patel · Software Engineer</title>
+  <meta name="description" content="Software engineer at Capital One building backend and platform infrastructure.">
 
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="Karan Patel · Software Engineer">
+  <meta property="og:description" content="Software engineer at Capital One building backend and platform infrastructure.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Karan Patel">
+  <meta property="og:url" content="https://karanpatel-15.github.io/Portfolio/">
+  <meta property="og:image" content="https://karanpatel-15.github.io/Portfolio/img/OgMetaImage.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Theme color (light/dark) -->
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
 <body>
-  <div class="messages"></div>
-  <script src="js/anime.js"></script>
+
+  <!-- Outer wrapper: phone frame on desktop, full-screen on mobile -->
+  <div class="phone-wrapper">
+
+    <!-- Dynamic Island pill — desktop only, aria-hidden -->
+    <div class="dynamic-island" aria-hidden="true"></div>
+
+    <!-- Fake status bar — desktop only, aria-hidden -->
+    <div class="status-bar" aria-hidden="true">
+      <span class="status-time"></span>
+      <span class="status-icons">
+        <!-- Signal bars -->
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor" aria-hidden="true">
+          <rect x="0" y="8" width="3" height="4" rx="1"/>
+          <rect x="4.5" y="5.5" width="3" height="6.5" rx="1"/>
+          <rect x="9" y="3" width="3" height="9" rx="1"/>
+          <rect x="13.5" y="0" width="3" height="12" rx="1"/>
+        </svg>
+        <!-- Wi-Fi -->
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true">
+          <circle cx="8" cy="11" r="1.5"/>
+          <path d="M5.05 8.45a4.17 4.17 0 015.9 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <path d="M2.2 5.6a8.17 8.17 0 0111.6 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        </svg>
+        <!-- Battery -->
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor" aria-hidden="true">
+          <rect x="0.75" y="1" width="20.5" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.35"/>
+          <rect x="22" y="3.75" width="2.5" height="4.5" rx="1.25" opacity="0.4"/>
+          <rect x="2" y="2.5" width="16.5" height="7" rx="1.5"/>
+        </svg>
+      </span>
+    </div>
+
+    <!-- Messages app -->
+    <div class="messages-app">
+
+      <!-- Header: back, contact, video -->
+      <header class="messages-header" role="banner">
+        <button class="back-btn" aria-label="Back to conversations">
+          <svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 1 1 9 9 17"/>
+          </svg>
+          <span class="back-unread" aria-label="3 unread">3</span>
+        </button>
+
+        <div class="header-center">
+          <div class="avatar" aria-hidden="true">KP</div>
+          <span class="header-name">Karan Patel ›</span>
+        </div>
+
+        <button class="header-video" aria-label="FaceTime video" tabindex="-1">
+          <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="1" y="1" width="13" height="14" rx="3"/>
+            <path d="M14 5.5l7-3v11l-7-3V5.5z"/>
+          </svg>
+        </button>
+      </header>
+
+      <!-- Scrollable message thread -->
+      <main class="message-thread" role="log" aria-live="polite" aria-label="Messages from Karan Patel">
+        <!-- Thread timestamp injected by JS -->
+      </main>
+
+      <!-- Decorative input bar — no interactivity, screen-reader hidden -->
+      <div class="input-bar" aria-hidden="true">
+        <button class="input-plus" tabindex="-1">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+            <circle cx="15" cy="15" r="13.5"/>
+            <line x1="15" y1="9" x2="15" y2="21"/>
+            <line x1="9" y1="15" x2="21" y2="15"/>
+          </svg>
+        </button>
+        <div class="input-pill">
+          <span class="input-placeholder">iMessage</span>
+        </div>
+        <button class="input-mic" tabindex="-1">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="7.5" y="1" width="7" height="13" rx="3.5"/>
+            <path d="M3 10.5a8 8 0 0016 0"/>
+            <line x1="11" y1="18.5" x2="11" y2="21.5"/>
+            <line x1="7.5" y1="21.5" x2="14.5" y2="21.5"/>
+          </svg>
+        </button>
+      </div>
+
+    </div><!-- /.messages-app -->
+  </div><!-- /.phone-wrapper -->
+
+  <!-- No-JS fallback -->
+  <noscript>
+    <div class="noscript-fallback">
+      <p>Karan Patel · Software Engineer at Capital One</p>
+      <p><a href="mailto:inbox.kpatel@gmail.com">inbox.kpatel@gmail.com</a></p>
+      <p><a href="https://www.linkedin.com/in/karanpatel1501/" rel="noopener noreferrer">linkedin.com/in/karanpatel1501</a></p>
+      <p><a href="https://github.com/Karanpatel-15" rel="noopener noreferrer">github.com/Karanpatel-15</a></p>
+      <p><a href="pdf/Karan_Patel_Resume.pdf">Karan_Patel_Resume.pdf</a></p>
+    </div>
+  </noscript>
+
   <script src="js/scripts.js"></script>
-  <script>
-    (function (i, s, o, g, r, a, m) {
-      i["GoogleAnalyticsObject"] = r;
-      (i[r] =
-        i[r] ||
-        function () {
-          (i[r].q = i[r].q || []).push(arguments);
-        }),
-        (i[r].l = 1 * new Date());
-      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
-      a.async = 1;
-      a.src = g;
-      m.parentNode.insertBefore(a, m);
-    })(
-      window,
-      document,
-      "script",
-      "//www.google-analytics.com/analytics.js",
-      "ga"
-    );
-    ga("create", "UA-37236197-1", "auto");
-    ga("send", "pageview");
-  </script>
 </body>
+</html>
