@@ -17,12 +17,12 @@ window.onload = function () {
   var messages = [
     "Hey there 👋",
     "My name is Karan Patel",
-    "I am a Computer Science Student.",
+    "I am a Software Engineer.",
     "You can get in contact with me<br>or check out my work below",
-    '<a href = "mailto: inbox.kpatel@gmail.com">inbox.kpatel@gmail.com</a><br><a href="tel:613-981-5014">613-981-5014</a>',
+    '<a href = "mailto: inbox.kpatel@gmail.com">inbox.kpatel@gmail.com</a>',
     '<a target="_blank" href="pdf/Karan_Patel_Resume.pdf">my/resume</a><br><a target="_blank" href="https://www.linkedin.com/in/karanpatel1501/">linkedin.com/karanpatel1501</a><br><a target="_blank" href="https://github.com/Karanpatel-15">github.com/Karanpatel-15</a>',
     getCurrentTime(),
-    "👀 Karan.",
+    "- Karan.",
   ];
 
   var getFontSize = function () {
