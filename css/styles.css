@@ -223,8 +223,8 @@ body {
   word-break: break-word;
 }
 
-/* Links inside text bubbles */
-.bubble a {
+/* Links inside text bubbles — explicitly excluded from card anchors */
+.bubble a:not(.link-card) {
   color: var(--link-color);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -341,6 +341,7 @@ body {
   font-size: 15px;
   font-weight: 600;
   color: var(--card-title);
+  text-decoration: none;  /* prevent underline bleed from parent <a> */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -350,6 +351,7 @@ body {
 .card-domain {
   font-size: 13px;
   color: var(--card-domain);
+  text-decoration: none;
   margin-top: 2px;
   line-height: 1.3;
 }
