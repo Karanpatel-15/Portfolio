@@ -1,180 +1,255 @@
-window.onload = function () {
-  var messagesEl = document.querySelector(".messages");
-  var typingSpeed = 20;
-  var loadingText = "<b>•</b><b>•</b><b>•</b>";
-  var messageIndex = 0;
+/* ─── Config ─── */
+const TYPING_BASE     = 450;
+const TYPING_PER_CHAR = 22;
+const TYPING_MAX      = 1700;
+const TYPING_CARD     = 900;
+const AFTER_BASE      = 380;
+const AFTER_PER_CHAR  = 8;
 
-  var getCurrentTime = function () {
-    var date = new Date();
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var current = hours + minutes * 0.01;
-    if (current >= 5 && current < 19) return "Have a nice day";
-    if (current >= 19 && current < 22) return "Have a nice evening";
-    if (current >= 22 || current < 5) return "Have a good night";
-  };
+/* ─── Reduced motion ─── */
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var messages = [
-    "Hey there 👋",
-    "My name is Karan Patel",
-    "I am a Software Engineer.",
-    "You can get in contact with me<br>or check out my work below",
-    '<a href = "mailto: inbox.kpatel@gmail.com">inbox.kpatel@gmail.com</a>',
-    '<a target="_blank" href="pdf/Karan_Patel_Resume.pdf">my/resume</a><br><a target="_blank" href="https://www.linkedin.com/in/karanpatel1501/">linkedin.com/karanpatel1501</a><br><a target="_blank" href="https://github.com/Karanpatel-15">github.com/Karanpatel-15</a>',
-    getCurrentTime(),
-    "- Karan.",
+/* ─── Time-of-day sign-off ─── */
+function getSignOff() {
+  const h = new Date().getHours();
+  const m = new Date().getMinutes();
+  const t = h + m * 0.01;
+  if (t >= 5  && t < 19) return 'Have a nice day';
+  if (t >= 19 && t < 22) return 'Have a nice evening';
+  return 'Have a good night';
+}
+
+/* ─── Message definitions ─── */
+function buildMessages() {
+  return [
+    { type: 'text',  text: 'Hey there 👋' },
+    { type: 'text',  text: 'I\'m Karan Patel' },
+    { type: 'text',  text: 'I\'m a software engineer at Capital One' },
+    { type: 'text',  text: 'Here\'s where you can find me:' },
+    { type: 'email', html: '<a href="mailto:inbox.kpatel@gmail.com">inbox.kpatel@gmail.com</a>' },
+    {
+      type:       'card',
+      href:       'https://www.linkedin.com/in/karanpatel1501/',
+      imageClass: 'linkedin-bg',
+      imageSrc:   'img/linkedin.svg',
+      imageAlt:   'LinkedIn logo',
+      title:      'Karan Patel | LinkedIn',
+      domain:     'linkedin.com',
+    },
+    {
+      type:       'card',
+      href:       'https://github.com/Karanpatel-15',
+      imageClass: 'github-bg',
+      imageSrc:   'img/github.svg',
+      imageAlt:   'GitHub logo',
+      title:      'Karanpatel-15 · GitHub',
+      domain:     'github.com',
+    },
+    {
+      type:       'card',
+      href:       'pdf/Karan_Patel_Resume.pdf',
+      imageClass: 'resume-bg',
+      imageSrc:   'img/resume-preview.svg',
+      imageAlt:   'First page of resume',
+      title:      'Karan_Patel_Resume.pdf',
+      domain:     'PDF · 88 KB',
+      target:     '_self',
+    },
+    { type: 'text', text: getSignOff() },
+    { type: 'text', text: '- Karan.' },
   ];
+}
 
-  var getFontSize = function () {
-    return parseInt(
-      getComputedStyle(document.body).getPropertyValue("font-size")
-    );
-  };
+/* ─── Helpers ─── */
+function typingDelay(msg) {
+  if (msg.type === 'card') return TYPING_CARD;
+  const len = (msg.text || msg.html || '').replace(/<[^>]+>/g, '').length;
+  return Math.min(TYPING_BASE + len * TYPING_PER_CHAR, TYPING_MAX);
+}
 
-  var pxToRem = function (px) {
-    return px / getFontSize() + "rem";
-  };
+function afterDelay(msg) {
+  const len = (msg.text || msg.html || '').replace(/<[^>]+>/g, '').length;
+  return AFTER_BASE + len * AFTER_PER_CHAR;
+}
 
-  var createBubbleElements = function (message, position) {
-    var bubbleEl = document.createElement("div");
-    var messageEl = document.createElement("span");
-    var loadingEl = document.createElement("span");
-    bubbleEl.classList.add("bubble");
-    bubbleEl.classList.add("is-loading");
-    bubbleEl.classList.add("cornered");
-    bubbleEl.classList.add(position === "right" ? "right" : "left");
-    messageEl.classList.add("message");
-    loadingEl.classList.add("loading");
-    messageEl.innerHTML = message;
-    loadingEl.innerHTML = loadingText;
-    bubbleEl.appendChild(loadingEl);
-    bubbleEl.appendChild(messageEl);
-    bubbleEl.style.opacity = 0;
-    return {
-      bubble: bubbleEl,
-      message: messageEl,
-      loading: loadingEl,
-    };
-  };
+/* ─── Pop-in using Web Animations API ─── */
+function popIn(el) {
+  if (reducedMotion) return;
+  el.animate(
+    [
+      { transform: 'scale(0.35)', opacity: '0',   offset: 0    },
+      { transform: 'scale(1.07)', opacity: '1',   offset: 0.6  },
+      { transform: 'scale(0.97)',                  offset: 0.82 },
+      { transform: 'scale(1)',                     offset: 1    },
+    ],
+    { duration: 320, easing: 'ease-out', fill: 'both' }
+  );
+}
 
-  var getDimentions = function (elements) {
-    return (dimensions = {
-      loading: {
-        w: "4rem",
-        h: "2.25rem",
-      },
-      bubble: {
-        w: pxToRem(elements.bubble.offsetWidth + 4),
-        h: pxToRem(elements.bubble.offsetHeight),
-      },
-      message: {
-        w: pxToRem(elements.message.offsetWidth + 4),
-        h: pxToRem(elements.message.offsetHeight),
-      },
-    });
-  };
+/* ─── Build a link-card <a> element ─── */
+function buildCard(msg) {
+  const a = document.createElement('a');
+  a.className = 'link-card';
+  a.href = msg.href;
+  a.target = msg.target || '_blank';
+  a.rel = 'noopener noreferrer';
 
-  var sendMessage = function (message, position) {
-    var loadingDuration =
-      message.replace(/<(?:.|\n)*?>/gm, "").length * typingSpeed + 500;
-    var elements = createBubbleElements(message, position);
-    messagesEl.appendChild(elements.bubble);
-    messagesEl.appendChild(document.createElement("br"));
-    var dimensions = getDimentions(elements);
-    elements.bubble.style.width = "0rem";
-    elements.bubble.style.height = dimensions.loading.h;
-    elements.message.style.width = dimensions.message.w;
-    elements.message.style.height = dimensions.message.h;
-    elements.bubble.style.opacity = 1;
-    var bubbleOffset = elements.bubble.offsetTop + elements.bubble.offsetHeight;
-    if (bubbleOffset > messagesEl.offsetHeight) {
-      var scrollMessages = anime({
-        targets: messagesEl,
-        scrollTop: bubbleOffset,
-        duration: 750,
-      });
+  const imgWrap = document.createElement('div');
+  imgWrap.className = `card-image ${msg.imageClass}`;
+
+  const img = document.createElement('img');
+  img.src = msg.imageSrc;
+  img.alt = msg.imageAlt;
+  img.width  = (msg.imageClass === 'resume-bg') ? 260 : 56;
+  img.height = (msg.imageClass === 'resume-bg') ? 140 : 56;
+  imgWrap.appendChild(img);
+
+  const body = document.createElement('div');
+  body.className = 'card-body';
+  /* safe: title and domain are hardcoded strings, not user input */
+  body.innerHTML =
+    `<div class="card-title">${msg.title}</div>` +
+    `<div class="card-domain">${msg.domain}</div>`;
+
+  a.appendChild(imgWrap);
+  a.appendChild(body);
+  return a;
+}
+
+/* ─── Create a bubble-row DOM node ─── */
+function createBubbleRow(msg, { withTail = false, afterCard = false } = {}) {
+  const row = document.createElement('div');
+  row.className = 'bubble-row';
+  if (afterCard) row.classList.add('after-card');
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble left';
+  if (withTail && msg.type !== 'card') bubble.classList.add('tail');
+  if (msg.type === 'card')            bubble.classList.add('card');
+
+  if (msg.type === 'card') {
+    bubble.appendChild(buildCard(msg));
+  } else if (msg.type === 'email') {
+    bubble.innerHTML = msg.html;
+  } else {
+    /* Plain text — sanitize before inserting */
+    bubble.textContent = msg.text;
+  }
+
+  row.appendChild(bubble);
+  return row;
+}
+
+/* ─── Sync tail: only the last text bubble has the tail class ─── */
+function syncTails(thread) {
+  const textBubbles = [...thread.querySelectorAll('.bubble.left:not(.card)')];
+  textBubbles.forEach((b, i) => {
+    if (i < textBubbles.length - 1) b.classList.remove('tail');
+    else                             b.classList.add('tail');
+  });
+}
+
+/* ─── Smooth scroll to bottom of thread ─── */
+function scrollToBottom(thread) {
+  thread.scrollTo({ top: thread.scrollHeight, behavior: 'smooth' });
+}
+
+/* ─── Reduced-motion path: show everything at once ─── */
+function showAllImmediate(thread) {
+  const msgs = buildMessages();
+  msgs.forEach((msg) => {
+    const row = createBubbleRow(msg);
+    thread.appendChild(row);
+  });
+  syncTails(thread);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+/* ─── Animated path: sequence messages one by one ─── */
+function scheduleMessages(thread, msgs, index, prevTextBubble, prevWasCard) {
+  if (index >= msgs.length) return;
+  const msg = msgs[index];
+
+  /* Show typing indicator */
+  const typingRow = document.createElement('div');
+  typingRow.className = 'typing-row';
+  const typingBubble = document.createElement('div');
+  typingBubble.className = 'typing-bubble';
+  typingBubble.setAttribute('aria-label', 'Karan is typing');
+  typingBubble.innerHTML =
+    '<div class="typing-dots">' +
+      '<span class="typing-dot"></span>' +
+      '<span class="typing-dot"></span>' +
+      '<span class="typing-dot"></span>' +
+    '</div>';
+  typingRow.appendChild(typingBubble);
+  thread.appendChild(typingRow);
+  popIn(typingBubble);
+  scrollToBottom(thread);
+
+  setTimeout(() => {
+    /* Remove typing indicator */
+    if (typingRow.parentNode) thread.removeChild(typingRow);
+
+    const afterCard = !!prevWasCard;
+    const row = createBubbleRow(msg, { withTail: true, afterCard });
+    thread.appendChild(row);
+
+    /* Previous text bubble loses its tail when a new text one arrives */
+    if (prevTextBubble && msg.type !== 'card') {
+      prevTextBubble.classList.remove('tail');
     }
-    var bubbleSize = anime({
-      targets: elements.bubble,
-      width: ["0rem", dimensions.loading.w],
-      marginTop: ["2.5rem", 0],
-      marginLeft: ["-2.5rem", 0],
-      duration: 800,
-      easing: "easeOutElastic",
-    });
-    var loadingLoop = anime({
-      targets: elements.bubble,
-      scale: [1.05, 0.95],
-      duration: 1100,
-      loop: true,
-      direction: "alternate",
-      easing: "easeInOutQuad",
-    });
-    var dotsStart = anime({
-      targets: elements.loading,
-      translateX: ["-2rem", "0rem"],
-      scale: [0.5, 1],
-      duration: 400,
-      delay: 25,
-      easing: "easeOutElastic",
-    });
-    var dotsPulse = anime({
-      targets: elements.bubble.querySelectorAll("b"),
-      scale: [1, 1.25],
-      opacity: [0.5, 1],
-      duration: 300,
-      loop: true,
-      direction: "alternate",
-      delay: function (i) {
-        return i * 100 + 50;
-      },
-    });
-    setTimeout(function () {
-      loadingLoop.pause();
-      dotsPulse.restart({
-        opacity: 0,
-        scale: 0,
-        loop: false,
-        direction: "forwards",
-        update: function (a) {
-          if (
-            a.progress >= 65 &&
-            elements.bubble.classList.contains("is-loading")
-          ) {
-            elements.bubble.classList.remove("is-loading");
-            anime({
-              targets: elements.message,
-              opacity: [0, 1],
-              duration: 300,
-            });
-          }
-        },
-      });
-      bubbleSize.restart({
-        scale: 1,
-        width: [dimensions.loading.w, dimensions.bubble.w],
-        height: [dimensions.loading.h, dimensions.bubble.h],
-        marginTop: 0,
-        marginLeft: 0,
-        begin: function () {
-          if (messageIndex < messages.length)
-            elements.bubble.classList.remove("cornered");
-        },
-      });
-    }, loadingDuration - 50);
-  };
 
-  var sendMessages = function () {
-    var message = messages[messageIndex];
-    if (!message) return;
-    sendMessage(message);
-    ++messageIndex;
-    setTimeout(
-      sendMessages,
-      message.replace(/<(?:.|\n)*?>/gm, "").length * typingSpeed +
-        anime.random(900, 1200)
-    );
-  };
+    const thisBubble = row.querySelector('.bubble');
+    const nextPrevText = (msg.type !== 'card') ? thisBubble : prevTextBubble;
+    const nextPrevWasCard = msg.type === 'card';
 
-  sendMessages();
-};
+    popIn(thisBubble);
+    scrollToBottom(thread);
+
+    setTimeout(() => {
+      scheduleMessages(thread, msgs, index + 1, nextPrevText, nextPrevWasCard);
+    }, afterDelay(msg));
+
+  }, typingDelay(msg));
+}
+
+/* ─── Init ─── */
+function init() {
+  const thread = document.querySelector('.message-thread');
+
+  /* Thread timestamp */
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  const tsDiv = document.createElement('div');
+  tsDiv.className = 'thread-timestamp';
+  const strong = document.createElement('strong');
+  strong.textContent = 'Today';
+  tsDiv.appendChild(strong);
+  tsDiv.appendChild(document.createTextNode(' ' + timeStr));
+  thread.appendChild(tsDiv);
+
+  /* Live status-bar clock (desktop frame only) */
+  const statusTime = document.querySelector('.status-time');
+  if (statusTime) {
+    const tick = () => {
+      const t = new Date();
+      statusTime.textContent = t.toLocaleTimeString('en-US',
+        { hour: 'numeric', minute: '2-digit', hour12: true });
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  if (reducedMotion) {
+    showAllImmediate(thread);
+  } else {
+    scheduleMessages(thread, buildMessages(), 0, null, false);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}

@@ -1,78 +1,542 @@
-:root { font-size: 1.125rem; }
-@media (min-width: 600px) { :root { font-size: 1.5rem; } }
-@media (min-width: 900px) { :root { font-size: 1.75rem; } }
-@media (min-width: 1200px) { :root { font-size: 2rem; } }
-*, *:before, *:after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ─── Custom properties ─── */
+:root {
+  --bg:             #f2f2f7;
+  --thread-bg:      #ffffff;
+  --bubble-left:    #e9e9eb;
+  --bubble-text:    #000000;
+  --link-color:     #007aff;
+  --header-bg:      rgba(242,242,247,0.92);
+  --header-border:  rgba(0,0,0,0.18);
+  --header-text:    #000000;
+  --muted:          #636366;  /* #8e8e93 fails 4.5:1 on white; this is 5.99:1 */
+  --input-border:   rgba(0,0,0,0.14);
+  --card-bg:        #ffffff;
+  --card-border:    rgba(0,0,0,0.1);
+  --card-title:     #000000;
+  --card-domain:    #636366;
+  --back-color:     #007aff;
+  --phone-bezel:    #d1d1d6;
+  --outside-bg:     #e5e5ea;
+  --avatar-grad:    linear-gradient(145deg, #636366, #3a3a3c);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:             #000000;
+    --thread-bg:      #000000;
+    --bubble-left:    #3b3b3d;
+    --bubble-text:    #ffffff;
+    --link-color:     #0a84ff;
+    --header-bg:      rgba(28,28,30,0.92);
+    --header-border:  rgba(255,255,255,0.15);
+    --header-text:    #ffffff;
+    --muted:          #8e8e93;  /* 6.44:1 on black — passes */
+    --input-border:   rgba(255,255,255,0.1);
+    --card-bg:        #1c1c1e;
+    --card-border:    rgba(255,255,255,0.1);
+    --card-title:     #ffffff;
+    --card-domain:    #8e8e93;
+    --back-color:     #0a84ff;
+    --phone-bezel:    #2c2c2e;
+    --outside-bg:     #111113;
+    --avatar-grad:    linear-gradient(145deg, #48484a, #2c2c2e);
+  }
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+button { background: none; border: none; cursor: default; }
+
+/* ─── Page background — visible outside the phone frame on desktop ─── */
 body {
+  font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.35;
+  background: var(--outside-bg);
+  color: var(--bubble-text);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100dvh;
+  min-height: 100vh;
+}
+
+/* ─── Phone wrapper: full-screen on mobile ─── */
+.phone-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Dynamic Island and status bar are mobile-hidden; shown only on desktop */
+.dynamic-island,
+.status-bar {
+  display: none;
+}
+
+/* ─── Messages app: fills remaining height ─── */
+.messages-app {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ─── Header ─── */
+.messages-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 10px;
+  padding-top: calc(8px + env(safe-area-inset-top));
+  background: var(--header-bg);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--header-border);
+  z-index: 10;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--back-color);
+  font-size: 17px;
+  padding: 6px 4px;
+  min-width: 44px;  /* touch target */
+  min-height: 44px;
+  justify-content: flex-start;
+}
+
+.back-unread {
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--back-color);
+}
+
+.header-center {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 100vw;
-  min-height: 100vh;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: rgb(255, 255, 255);
+  gap: 3px;
+  flex: 1;
+}
 
-  background: rgb(0, 0, 0);
+/* Circular avatar */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--avatar-grad);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  user-select: none;
 }
-.messages {
-  overflow: auto;
-  width: 100vw;
-  max-height: 100vh;
-  padding: 1rem .9rem;
+
+.header-name {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--header-text);
 }
+
+.header-video {
+  color: var(--back-color);
+  padding: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* ─── Scrollable message thread ─── */
+.message-thread {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 14px 20px 16px; /* left 16px: accommodates 10px tail overhang */
+  background: var(--thread-bg);
+  scroll-behavior: smooth;
+  overscroll-behavior-y: contain;
+}
+
+/* Thread timestamp */
+.thread-timestamp {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 400;
+  margin: 8px 0 16px;
+  letter-spacing: 0.1px;
+}
+
+.thread-timestamp strong {
+  font-weight: 600;
+}
+
+/* ─── Bubble rows — each message sits in its own block row ─── */
+.bubble-row {
+  display: block;  /* block = full width row, no float clearfix needed */
+  margin-bottom: 3px;
+}
+
+/* Tight run-spacing between consecutive text rows */
+.bubble-row + .bubble-row {
+  margin-top: 0; /* rows are tight by default; bubble handles its own top margin */
+}
+
+/* Extra breathing room after a card */
+.bubble-row.after-card {
+  margin-top: 10px;
+}
+
+/* ─── Bubble base ─── */
 .bubble {
+  position: relative;
+  display: block;                     /* block with fit-content avoids float + clearfix */
+  width: -webkit-fit-content;
+  width: fit-content;
+  max-width: 78%;
+  padding: 9px 13px;
+  font-size: 17px;
+  line-height: 1.35;
+  border-radius: 18px;
+  background: var(--bubble-left);
+  color: var(--bubble-text);
+  transform-origin: bottom left;
+  word-break: break-word;
+}
+
+/* Links inside text bubbles — explicitly excluded from card anchors */
+.bubble a:not(.link-card) {
+  color: var(--link-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ─── iMessage tail — last bubble in a consecutive run ─── */
+.bubble.tail {
+  border-bottom-left-radius: 4px;
+}
+
+/* Colored fill of the tail */
+.bubble.tail::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  bottom: -1px;
+  left: -8px;
+  width: 20px;
+  height: 20px;
+  background: var(--bubble-left);
+  border-bottom-right-radius: 18px 16px;
+}
+
+/* Background-colored cutout that creates the concave inward curve */
+.bubble.tail::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  bottom: -1px;
+  left: -10px;
+  width: 12px;
+  height: 20px;
+  background: var(--thread-bg);
+  border-bottom-right-radius: 10px;
+}
+
+/* ─── Link preview card bubble ─── */
+.bubble.card {
+  padding: 0;
   overflow: hidden;
-  display: inline-block;
-  margin: 0 0 .125rem 0;
-  padding: .5rem .85rem;
-  line-height: 1.25rem;
-  border-radius: 1.25rem;
-  transform-origin: 0 100%;
-  vertical-align: middle;
-  transition: border-radius .25s ease-out .075s;
+  width: 260px;
+  max-width: min(78%, 260px);
+  border-radius: 14px;
+  /* No tail on cards — pseudo-elements are overridden */
 }
-.bubble.left.cornered {
-  border-bottom-left-radius: 0;
-}
-.bubble.left {
-  background: rgba(59, 59, 61, 255);
-}
-.bubble:after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: -.5rem;
-  width: .5rem;
-  height: .5rem;
-  background-image: url(../img/corner.svg);
-  background-size: .5rem .5rem;
-  background-position: .5rem 0;
-  background-repeat: no-repeat;
-  transition: background-position .15s ease-in;
-}
-.bubble.cornered:after {
-  background-position: 0 0;
-}
-.bubble span {
+
+.bubble.card::before,
+.bubble.card::after { display: none; }
+
+.link-card {
   display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--card-bg);
+  border: 0.5px solid var(--card-border);
+  border-radius: 14px;
+  overflow: hidden;
+  touch-action: manipulation;  /* eliminate 300ms tap delay */
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.bubble span.message {
-  opacity: 0;
+
+.link-card:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 2px;
 }
-.bubble a {
-  color: #0076FF;
+
+.link-card:active .card-image,
+.link-card:active .card-body {
+  opacity: 0.72;
 }
-.bubble .loading {
+
+/* Card top image area */
+.card-image {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: opacity 0.12s ease;
+}
+
+/* Brand-specific image areas */
+.card-image.linkedin-bg { background: #0A66C2; }
+.card-image.github-bg   { background: #0d1117; }
+.card-image.resume-bg   { background: #f0f0f0; height: 140px; }
+
+.card-image img {
+  object-fit: cover;
+  object-position: top;
+}
+
+.card-image.linkedin-bg img,
+.card-image.github-bg img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.card-image.resume-bg img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Card text area */
+.card-body {
+  padding: 9px 11px 10px;
+  background: var(--card-bg);
+  transition: opacity 0.12s ease;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--card-title);
+  text-decoration: none;  /* prevent underline bleed from parent <a> */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.card-domain {
+  font-size: 13px;
+  color: var(--card-domain);
+  text-decoration: none;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* ─── Typing indicator ─── */
+.typing-row {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.typing-bubble {
+  position: relative;
+  display: block;
+  width: -webkit-fit-content;
+  width: fit-content;
+  padding: 10px 14px;
+  background: var(--bubble-left);
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  transform-origin: bottom left;
+}
+
+/* Tail on typing bubble (it's always the "last" in its moment) */
+.typing-bubble::before {
+  content: '';
   position: absolute;
-  width: 2.25rem;
-  font-size: 2rem;
-  line-height: 1rem;
+  z-index: 0;
+  bottom: -1px;
+  left: -8px;
+  width: 20px;
+  height: 20px;
+  background: var(--bubble-left);
+  border-bottom-right-radius: 18px 16px;
 }
-.bubble .loading b {
-  display: inline-block;
-  color: rgba(0,0,0,.5);
+
+.typing-bubble::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  bottom: -1px;
+  left: -10px;
+  width: 12px;
+  height: 20px;
+  background: var(--thread-bg);
+  border-bottom-right-radius: 10px;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  height: 20px;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: typing-bounce 1.2s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0);    opacity: 0.5; }
+  30%            { transform: translateY(-6px); opacity: 1;   }
+}
+
+/* ─── Decorative input bar ─── */
+.input-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  background: var(--header-bg);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--header-border);
+  flex-shrink: 0;
+}
+
+.input-plus,
+.input-mic {
+  color: var(--link-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.input-pill {
+  flex: 1;
+  height: 34px;
+  background: var(--thread-bg);
+  border-radius: 17px;
+  border: 0.5px solid var(--input-border);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+}
+
+.input-placeholder {
+  font-size: 17px;
+  color: var(--muted);
+}
+
+/* ─── noscript fallback ─── */
+.noscript-fallback {
+  padding: 40px 24px;
+  font-family: -apple-system, Helvetica, Arial, sans-serif;
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--bubble-text);
+}
+
+.noscript-fallback a {
+  color: var(--link-color);
+}
+
+/* ─── Desktop: full iPhone frame ─── */
+@media (min-width: 600px) {
+  body {
+    padding: 20px;
+    align-items: center;
+  }
+
+  .phone-wrapper {
+    width: 390px;
+    height: min(860px, 92dvh);
+    height: min(860px, 92vh);
+    border-radius: 48px;
+    border: 1.5px solid var(--phone-bezel);
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.06),
+      0 32px 80px rgba(0,0,0,0.38),
+      inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  /* Dynamic Island */
+  .dynamic-island {
+    display: block;
+    width: 120px;
+    height: 34px;
+    background: #000;
+    border-radius: 20px;
+    margin: 10px auto 0;
+    flex-shrink: 0;
+  }
+
+  /* Fake status bar */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 24px 2px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--header-text);
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+
+  .status-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--header-text);
+  }
+
+  /* Strip safe-area offsets inside the frame */
+  .messages-header { padding-top: 8px; }
+  .input-bar       { padding-bottom: 12px; }
+}
+
+/* ─── Reduced motion: show all immediately, no keyframes ─── */
+@media (prefers-reduced-motion: reduce) {
+  .typing-dot { animation: none; opacity: 0.65; }
+  .bubble     { animation: none !important; transition: none !important; }
 }

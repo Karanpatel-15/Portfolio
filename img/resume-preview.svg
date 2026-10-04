@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 160" fill="none">
+  <rect width="260" height="160" fill="#f5f5f5"/>
+  <!-- Page shadow -->
+  <rect x="30" y="12" width="160" height="138" rx="3" fill="#d0d0d0"/>
+  <!-- Page -->
+  <rect x="26" y="8" width="160" height="138" rx="3" fill="white"/>
+  <!-- Header bar -->
+  <rect x="26" y="8" width="160" height="28" rx="3" fill="#1a1a2e"/>
+  <rect x="26" y="28" width="160" height="8" fill="#1a1a2e"/>
+  <!-- Name text lines -->
+  <rect x="40" y="18" width="90" height="8" rx="2" fill="white" opacity="0.9"/>
+  <rect x="40" y="28.5" width="60" height="4" rx="1" fill="white" opacity="0.55"/>
+  <!-- Content lines -->
+  <rect x="40" y="48" width="50" height="5" rx="1.5" fill="#333" opacity="0.7"/>
+  <rect x="40" y="57" width="128" height="3" rx="1" fill="#888" opacity="0.6"/>
+  <rect x="40" y="63" width="110" height="3" rx="1" fill="#888" opacity="0.5"/>
+  <rect x="40" y="69" width="118" height="3" rx="1" fill="#888" opacity="0.5"/>
+  <rect x="40" y="82" width="52" height="5" rx="1.5" fill="#333" opacity="0.7"/>
+  <rect x="40" y="91" width="128" height="3" rx="1" fill="#888" opacity="0.6"/>
+  <rect x="40" y="97" width="100" height="3" rx="1" fill="#888" opacity="0.5"/>
+  <rect x="40" y="103" width="115" height="3" rx="1" fill="#888" opacity="0.5"/>
+  <rect x="40" y="109" width="95" height="3" rx="1" fill="#888" opacity="0.5"/>
+  <rect x="40" y="120" width="52" height="5" rx="1.5" fill="#333" opacity="0.7"/>
+  <rect x="40" y="129" width="128" height="3" rx="1" fill="#888" opacity="0.6"/>
+  <rect x="40" y="135" width="80" height="3" rx="1" fill="#888" opacity="0.5"/>
+</svg>
